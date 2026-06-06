@@ -196,7 +196,6 @@ const VerifyStudent = () => {
                   value={dateOfBirth}
                   onFocus={(e) => {
                     e.target.type = "date";
-                    e.target.showPicker?.();
                   }}
                   onBlur={(e) => {
                     if (!e.target.value) {
@@ -209,7 +208,7 @@ const VerifyStudent = () => {
                   className="w-full h-12 border border-[#E9EBF8] bg-[#FCFDFF] rounded-[10px] py-3.75 px-2.5 pr-10 text-[12px] placeholder:text-[12px] placeholder:text-[#817E7E] font-normal text-black focus:border-[#122354] focus:outline-none appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                 />
 
-                <CiCalendar className="absolute right-3 top-1/2 -translate-y-1/2 text-[#817E7E] text-xl pointer-events-none" />
+                <CiCalendar className="absolute right-3 top-1/2 -translate-y-1/2 text-[#817E7E] text-xl" />
               </div>
             </div>
 
