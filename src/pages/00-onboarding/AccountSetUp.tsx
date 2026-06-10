@@ -18,6 +18,8 @@ const AccountSetUp = () => {
   const [showNextScreen, setShowNextScreen] = useState(false);
   const [isContinueLoading, setIsContinueLoading] = useState(false);
   const [isVerifyLoading, setIsVerifyLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [confirmPasswordError, setConfirmPasswordError] = useState(false);
   const [timer, setTimer] = useState(59);
   const [otp, setOtp] = useState("");
   const [otpValues, setOtpValues] = useState(["", "", "", "", ""]);
@@ -25,6 +27,7 @@ const AccountSetUp = () => {
   const [verifyPhase, setVerifyPhase] = useState<
     "idle" | "loading" | "spinning" | "success"
   >("idle");
+  const [emailError, setEmailError] = useState(false);
   const navigate = useNavigate();
 
   const contactFields = [
@@ -46,6 +49,11 @@ const AccountSetUp = () => {
     },
   ];
 
+  const validateEmail = (value: string) => {
+    const pattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    return pattern.test(value);
+  };
+
   const [contactValues, setContactValues] = useState({
     email: "",
     phoneNumber: "",
@@ -53,9 +61,10 @@ const AccountSetUp = () => {
 
   const isAccountFilled =
     contactValues.email !== "" &&
+    validateEmail(contactValues.email) &&
     contactValues.phoneNumber !== "" &&
-    password !== "" &&
-    confirmPassword !== "" &&
+    password.length >= 8 &&
+    confirmPassword.length >= 8 &&
     password === confirmPassword;
 
   const handleContinue = () => {
@@ -81,7 +90,6 @@ const AccountSetUp = () => {
     setOtpValues(newOtp);
     setOtp(newOtp.join(""));
 
-    // animate the wrapper div
     const wrapper = (inputRefs.current as any)[`wrap_${index}`];
     if (wrapper && value) {
       wrapper.classList.remove("pop");
@@ -95,7 +103,6 @@ const AccountSetUp = () => {
   };
 
   const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
-    // move back on backspace
     if (e.key === "Backspace" && !otpValues[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -107,9 +114,9 @@ const AccountSetUp = () => {
     setIsVerifyLoading(true);
     setTimeout(() => {
       setIsVerifyLoading(false);
-      setVerifyPhase("spinning"); // image with spinning ring
+      setVerifyPhase("spinning");
       setTimeout(() => {
-        setVerifyPhase("success"); // green circle and checkmark
+        setVerifyPhase("success");
       }, 3000);
     }, 2000);
   };
@@ -119,7 +126,6 @@ const AccountSetUp = () => {
       <div className="h-screen w-full flex items-center justify-center bg-white px-6">
         <div className="w-full bg-white rounded-[20px] shadow-[0_10px_40px_rgba(0,0,0,0.1)] flex flex-col items-center py-10 px-6">
           <div className="relative flex items-center justify-center w-24 h-24 mb-6">
-            {/* PHASE 1 — image with spinning ring */}
             {verifyPhase === "spinning" && (
               <>
                 <svg
@@ -143,7 +149,6 @@ const AccountSetUp = () => {
               </>
             )}
 
-            {/* PHASE 2 — green circle with checkmark */}
             {verifyPhase === "success" && (
               <motion.div
                 className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center"
@@ -186,11 +191,8 @@ const AccountSetUp = () => {
               <p className="font-medium text-[12px] text-[#122354] text-center mt-1.5">
                 You can now secure your account with a payment pin
               </p>
-
               <div
-                onClick={() => {
-                  navigate("/pin");
-                }}
+                onClick={() => navigate("/pin")}
                 className="flex items-center justify-center max-w-87.75 w-full h-12.75 rounded-[10px] py-3.75 px-2.5 gap-1.25 bg-[#122354] text-white mt-3 cursor-pointer"
               >
                 <button className="font-semibold text-[14px]">
@@ -210,13 +212,12 @@ const AccountSetUp = () => {
       <>
         <div>
           <HeaderCurve />
-
           <div className="flex flex-col gap-1.75 items-center text-center mt-10">
             <p className="font-semibold text-[20px] text-[#122354]">
               Check Your Email
             </p>
             <p className="font-normal text-[12px] text-[#817E7E] px-8">
-              We sent a 6-digit code to:{" "}
+              We sent a 5-digit code to:{" "}
               <span className="font-semibold text-[12px] text-[#122354]">
                 {contactValues.email}.
               </span>{" "}
@@ -254,8 +255,8 @@ const AccountSetUp = () => {
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
                     className={`w-full h-full rounded-[10px] text-center text-[18px] font-semibold text-[#122354] focus:outline-none focus:border-2 focus:border-[#122354] focus:bg-white caret-transparent
-            ${val ? "bg-white border-2 border-[#122354]" : "bg-[#E3E1E1]"}
-            placeholder:text-[#122354] placeholder:font-semibold`}
+                      ${val ? "bg-white border-2 border-[#122354]" : "bg-[#E3E1E1]"}
+                      placeholder:text-[#122354] placeholder:font-semibold`}
                   />
                 </div>
               );
@@ -280,12 +281,13 @@ const AccountSetUp = () => {
             </p>
           )}
         </div>
+
         <div
           onClick={
             !isVerifyLoading && isOtpFilled ? handleVerifyCode : undefined
           }
           className={`flex items-center text-center justify-center py-3.75 px-2.5 gap-1.25 rounded-[10px] h-12.75 max-w-87.75 w-full mx-auto text-white mt-5 transition-opacity duration-300
-    ${isOtpFilled && !isVerifyLoading ? "bg-[#122354] opacity-100 cursor-pointer" : "bg-[#122354] opacity-40 cursor-not-allowed"}`}
+            ${isOtpFilled && !isVerifyLoading ? "bg-[#122354] opacity-100 cursor-pointer" : "bg-[#122354] opacity-40 cursor-not-allowed"}`}
         >
           {isVerifyLoading ? (
             <div className="flex items-center gap-1.5">
@@ -307,23 +309,24 @@ const AccountSetUp = () => {
         </div>
 
         <div className="flex flex-col gap-1.75 items-center text-center mt-6">
-          <div>
-            <p className="text-[#817E7E] font-normal text-[12px]">
-              Didn't get the code?{" "}
-              <span className="font-semibold text-[12px] text-[#122354]">
-                Resend
-              </span>{" "}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-[#817E7E] font-normal text-[12px]">
-              Wrong Email?{" "}
-              <span className="font-semibold text-[12px] text-[#122354]">
-                Change Email
-              </span>
-            </p>
-          </div>
+          <p className="text-[#817E7E] font-normal text-[12px]">
+            Didn't get the code?{" "}
+            <span
+              onClick={() => setTimer(59)}
+              className="font-semibold text-[12px] text-[#122354] cursor-pointer"
+            >
+              Resend
+            </span>
+          </p>
+          <p className="text-[#817E7E] font-normal text-[12px]">
+            Wrong Email?{" "}
+            <span
+              onClick={() => setShowNextScreen(false)}
+              className="font-semibold text-[12px] text-[#122354] cursor-pointer"
+            >
+              Change Email
+            </span>
+          </p>
         </div>
       </>
     );
@@ -333,7 +336,6 @@ const AccountSetUp = () => {
     <>
       <div>
         <HeaderCurve />
-
         <div className="p-4 mt-10">
           <div className="flex flex-col">
             <h2 className="font-semibold text-[22px] text-[#1E3A8A] leading-[100%]">
@@ -359,17 +361,36 @@ const AccountSetUp = () => {
                   placeholder={field.placeholder}
                   value={contactValues[field.key as keyof typeof contactValues]}
                   onChange={(e) => {
-                    const value =
-                      field.type === "tel"
-                        ? e.target.value.replace(/[^0-9+\s]/g, "")
-                        : e.target.value;
+                    let value = e.target.value;
+                    if (field.type === "tel") {
+                      value = value.replace(/[^0-9+\s]/g, "");
+                    } else if (field.type === "email") {
+                      value = value.replace(/[^a-zA-Z0-9@._+-]/g, "");
+                      setEmailError(false);
+                    }
                     setContactValues((prev) => ({
                       ...prev,
                       [field.key]: value,
                     }));
                   }}
-                  className="border rounded-[10px] py-3.75 px-2.5 h-12 border-[#E9EBF8] bg-[#FCFDFF] placeholder:text-[12px] font-normal w-full focus:outline-none text-black focus:border-[#122354]"
+                  onBlur={() => {
+                    if (
+                      field.type === "email" &&
+                      contactValues.email &&
+                      !validateEmail(contactValues.email)
+                    ) {
+                      setEmailError(true);
+                    }
+                  }}
+                  className={`border rounded-[10px] py-3.75 px-2.5 h-12 bg-[#FCFDFF] placeholder:text-[12px] font-normal w-full focus:outline-none text-black focus:border-[#122354]
+    ${field.type === "email" && emailError ? "border-red-400 focus:border-red-400" : "border-[#E9EBF8] focus:border-[#122354]"}`}
                 />
+
+                {field.type === "email" && emailError && (
+                  <p className="text-red-400 text-[11px] font-normal mt-1">
+                    Please enter a valid Gmail address e.g example@gmail.com
+                  </p>
+                )}
               </div>
             ))}
           </div>
@@ -383,8 +404,17 @@ const AccountSetUp = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Min. 8 character"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="border rounded-[10px] py-3.75 px-2.5 h-12 border-[#E9EBF8] bg-[#FCFDFF] placeholder:text-[12px] font-normal w-full focus:outline-none text-black focus:border-[#122354] pr-10"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordError(false);
+                }}
+                onBlur={() => {
+                  if (password && password.length < 8) {
+                    setPasswordError(true);
+                  }
+                }}
+                className={`border rounded-[10px] py-3.75 px-2.5 h-12 bg-[#FCFDFF] placeholder:text-[12px] font-normal w-full focus:outline-none text-black pr-10
+                  ${passwordError ? "border-red-400 focus:border-red-400" : "border-[#E9EBF8] focus:border-[#122354]"}`}
               />
               <div
                 onClick={togglePassword}
@@ -397,6 +427,11 @@ const AccountSetUp = () => {
                 )}
               </div>
             </div>
+            {passwordError && (
+              <p className="text-red-400 text-[11px] font-normal mt-1">
+                Password must be at least 8 characters
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col mt-5 gap-y-1.25">
@@ -408,9 +443,17 @@ const AccountSetUp = () => {
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  setConfirmPasswordError(false);
+                }}
+                onBlur={() => {
+                  if (confirmPassword && confirmPassword.length < 8) {
+                    setConfirmPasswordError(true);
+                  }
+                }}
                 className={`border rounded-[10px] py-3.75 px-2.5 h-12 bg-[#FCFDFF] placeholder:text-[12px] font-normal w-full focus:outline-none text-black pr-10
-        ${!passwordsMatch ? "border-red-400 focus:border-red-400" : "border-[#E9EBF8] focus:border-[#122354]"}`}
+                  ${!passwordsMatch || confirmPasswordError ? "border-red-400 focus:border-red-400" : "border-[#E9EBF8] focus:border-[#122354]"}`}
               />
               <div
                 onClick={toggleConfirmPassword}
@@ -423,18 +466,24 @@ const AccountSetUp = () => {
                 )}
               </div>
             </div>
-            {!passwordsMatch && (
+            {confirmPasswordError && (
+              <p className="text-red-400 text-[11px] font-normal mt-1">
+                Password must be at least 8 characters
+              </p>
+            )}
+            {!passwordsMatch && !confirmPasswordError && (
               <p className="text-red-400 text-[11px] font-normal mt-1">
                 Passwords do not match
               </p>
             )}
           </div>
+
           <div
             onClick={
               !isContinueLoading && isAccountFilled ? handleContinue : undefined
             }
             className={`flex items-center justify-center w-full h-12.75 rounded-[10px] py-3.75 px-2.5 gap-1.25 text-white mt-5 transition-opacity duration-300
-    ${isAccountFilled && !isContinueLoading ? "bg-[#122354] opacity-100 cursor-pointer" : "bg-[#122354] opacity-40 cursor-not-allowed"}`}
+              ${isAccountFilled && !isContinueLoading ? "bg-[#122354] opacity-100 cursor-pointer" : "bg-[#122354] opacity-40 cursor-not-allowed"}`}
           >
             {isContinueLoading ? (
               <div className="flex items-center gap-1.5">

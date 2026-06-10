@@ -24,7 +24,11 @@ const GetStarted = () => {
           >
             Get Started
           </button>
-          <button className="rounded-[7px] py-3.75 px-2.5 w-full border border-white text-white font-semibold text-[14px] mt-5">
+          <button 
+           onClick={() => {
+              navigate("/signin");
+            }}
+          className="rounded-[7px] py-3.75 px-2.5 w-full border border-white text-white font-semibold text-[14px] mt-5">
             I already have an account
           </button>
         </div>

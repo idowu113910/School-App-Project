@@ -105,3 +105,22 @@ body {
   animation: pop 1.2s ease-out;
   display: block;
 }
+
+@keyframes dot-fade {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.loader-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #1e3a8a;
+  position: absolute;
+  animation: dot-fade 1.2s ease-in-out infinite;
+}
