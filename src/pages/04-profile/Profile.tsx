@@ -1,5 +1,13 @@
+import Header from "./Header";
+
 const Profile = () => {
-  return <div>Profile</div>;
+  return (
+    <>
+      <div>
+        <Header />
+      </div>
+    </>
+  );
 };
 
 export default Profile;

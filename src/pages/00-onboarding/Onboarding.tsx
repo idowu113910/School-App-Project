@@ -15,9 +15,11 @@ const Onboarding = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const expandTimer = setTimeout(() => setSplashPhase("expand"), 800);
-    const doneTimer = setTimeout(() => setSplashPhase("done"), 3500);
+    const idleTimer = setTimeout(() => setSplashPhase("dot"), 1200); // hold before dot appears
+    const expandTimer = setTimeout(() => setSplashPhase("expand"), 1600); // was 800
+    const doneTimer = setTimeout(() => setSplashPhase("done"), 4300); // was 3500
     return () => {
+      clearTimeout(idleTimer);
       clearTimeout(expandTimer);
       clearTimeout(doneTimer);
     };

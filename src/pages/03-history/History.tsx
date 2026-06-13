@@ -1,5 +1,13 @@
+import Header from "./Header";
+
 const History = () => {
-  return <div>History</div>;
+  return (
+    <>
+      <div>
+        <Header />
+      </div>
+    </>
+  );
 };
 
 export default History;

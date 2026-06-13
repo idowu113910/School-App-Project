@@ -11,10 +11,8 @@ import grad from "../../assets/grad.svg";
 import pend from "../../assets/clock.svg";
 import cal from "../../assets/cal.svg";
 import dpt from "../../assets/dpt.svg";
-import lab from "../../assets/lab fee.svg"
-import lib from "../../assets/library.svg"
-
-
+import lab from "../../assets/lab fee.svg";
+import lib from "../../assets/library.svg";
 
 const Header = ({
   onTransfer,

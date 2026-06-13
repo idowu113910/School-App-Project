@@ -5,8 +5,16 @@ import phone from "../../assets/USSD.svg";
 import secure from "../../assets/secure.svg";
 import { useEffect, useState } from "react";
 import visa from "../../assets/Visa.svg";
+import { useNavigate } from "react-router-dom";
+import PaymentSuccess from "../00-onboarding/PaymentSuccess";
 
 const Body = ({ onBack }: { onBack: () => void }) => {
+  const [isContinueLoading, setIsContinueLoading] = useState(false);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [cvv, setCvv] = useState("");
+  const [showPinPad, setShowPinPad] = useState(false);
+  const [pin, setPin] = useState("");
+
   const [selectedMethod, setSelectedMethod] = useState(
     () => localStorage.getItem("selectedMethod") || "",
   );
@@ -41,9 +49,42 @@ const Body = ({ onBack }: { onBack: () => void }) => {
     localStorage.setItem("isOn", String(isOn));
   }, [isOn]);
 
-  {
-    /* SHOW PAY SCREEN */
+  const isCardReady =
+    cardNumber.length === 16 &&
+    cardHolder.trim() !== "" &&
+    expiry.trim() !== "";
+
+  const handleContinueToPay = () => {
+    setIsContinueLoading(true);
+    setTimeout(() => {
+      setIsContinueLoading(false);
+      setShowPinPad(true); // open pin pad first
+    }, 2000);
+  };
+
+  const handlePinComplete = () => {
+    setShowPinPad(false);
+    setIsContinueLoading(true);
+    setTimeout(() => {
+      setIsContinueLoading(false);
+      setShowPaymentSuccess(true); // navigate to success only after pin
+    }, 2000);
+  };
+
+  if (showPaymentSuccess) {
+    return (
+      <PaymentSuccess
+        onBackToHome={() => {
+          setShowPaymentSuccess(false);
+          setShowPay(false);
+          setSelectedMethod("");
+          setCardNumber("");
+          setCardHolder("");
+        }}
+      />
+    );
   }
+
   if (showPay) {
     return (
       <div className="px-6 mt-8 pb-28">
@@ -152,13 +193,12 @@ const Body = ({ onBack }: { onBack: () => void }) => {
             <h4 className="font-semibold text-[12px] text-[#122354]">
               CARD HOLDER NUMBER
             </h4>
-
             <input
               type="text"
               placeholder="Full name on card"
               value={cardHolder}
-              onChange={(e) => setCardHolder(e.target.value)}
-              className="h-12.75 w-full rounded-[10px] outline-none border border-[#E7E4E4] p-2.5 placeholder:text-[10px] text-[#6A6868] font-normal"
+              onChange={(e) => setCardHolder(e.target.value.toUpperCase())}
+              className="h-12.75 w-full rounded-[10px] outline-none border border-[#E7E4E4] p-2.5 placeholder:text-[10px] placeholder:text-[#6A6868] text-black font-normal"
             />
           </div>
 
@@ -171,16 +211,36 @@ const Body = ({ onBack }: { onBack: () => void }) => {
                 type="text"
                 placeholder="MM/YY"
                 value={expiry}
-                onChange={(e) => setExpiry(e.target.value)}
-                className="w-full h-12.75 rounded-[10px] border border-[#E7E4E4] p-2.5 placeholder:text-[10px] text-[#6A6868] font-normal outline-none"
+                onChange={(e) => {
+                  const input = e.target.value;
+
+                  // Allow full deletion
+                  if (input.length < expiry.length) {
+                    setExpiry(input.replace(/\/$/, "")); // strip trailing slash when backspacing
+                    return;
+                  }
+
+                  let val = input.replace(/\D/g, ""); // strip non-digits
+                  if (val.length >= 2) {
+                    val = val.slice(0, 2) + "/" + val.slice(2, 4); // insert slash after MM
+                  }
+                  setExpiry(val);
+                }}
+                maxLength={5}
+                className="w-full h-12.75 rounded-[10px] border border-[#E7E4E4] p-2.5 placeholder:text-[10px] placeholder:text-[#6A6868] text-black font-normal outline-none"
               />
             </div>
-
             <div className="flex flex-col gap-1.5">
               <h5 className="font-semibold text-[12px] text-[#122354]">CVV</h5>
               <input
                 type="text"
                 placeholder="000"
+                value={cvv}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, ""); // strip non-digits
+                  if (val.length <= 3) setCvv(val);
+                }}
+                maxLength={3}
                 className="w-full h-12.75 rounded-[10px] border border-[#E7E4E4] p-2.5 placeholder:text-[10px] text-[#6A6868] font-normal outline-none"
               />
             </div>
@@ -214,17 +274,25 @@ const Body = ({ onBack }: { onBack: () => void }) => {
 
         <div
           onClick={
-            selectedMethod === "bank" ? () => setShowPay(true) : undefined
+            !isContinueLoading && isCardReady ? handleContinueToPay : undefined
           }
           className={`w-full h-13.5 rounded-[7px] py-3.75 px-2.5 items-center text-center mt-5 transition-opacity duration-300
-    ${selectedMethod === "bank" ? "bg-[#122354] opacity-100 cursor-pointer" : "bg-[#122354] opacity-40 cursor-not-allowed"}`}
+    ${isCardReady && !isContinueLoading ? "bg-[#122354] opacity-100 cursor-pointer" : "bg-[#122354] opacity-40 cursor-not-allowed"}`}
         >
-          <button
-            disabled={selectedMethod !== "bank"}
-            className="font-semibold text-[#FFFFFF] text-[14px]"
-          >
-            Continue to Pay
-          </button>
+          {isContinueLoading ? (
+            <div className="flex items-center justify-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-white dot-1" />
+              <div className="w-2 h-2 rounded-full bg-white dot-2" />
+              <div className="w-2 h-2 rounded-full bg-white dot-3" />
+            </div>
+          ) : (
+            <button
+              disabled={!isCardReady}
+              className="font-semibold text-[#FFFFFF] text-[14px]"
+            >
+              Continue to Pay
+            </button>
+          )}
         </div>
 
         <div className="flex items-center justify-center gap-2 mt-2">
@@ -234,6 +302,110 @@ const Body = ({ onBack }: { onBack: () => void }) => {
             Secure encrypted payment
           </p>
         </div>
+
+        {showPinPad && (
+          <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
+            <div className="w-full bg-white rounded-t-3xl px-6 pt-4 pb-10">
+              {/* Drag handle */}
+              <div className="w-10 h-1 bg-[#D9D9D9] rounded-full mx-auto mb-6" />
+
+              {/* Close button */}
+              <div className="flex justify-end mb-2">
+                <button
+                  onClick={() => {
+                    setShowPinPad(false);
+                    setPin("");
+                  }}
+                  className="w-7 h-7 rounded-full bg-[#F0F0F0] flex items-center justify-center text-[#122354] font-semibold text-[14px]"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Title */}
+              <p className="text-center font-medium text-[16px] text-[#122354] mb-6">
+                Transaction Pin
+              </p>
+
+              {/* Pin dots */}
+              <div className="flex justify-center gap-4 mb-8">
+                {[...Array(4)].map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-5 h-5 rounded-full border-2 transition-all duration-200 ${
+                      pin.length > i
+                        ? "bg-[#122354] border-[#122354]"
+                        : "border-[#122354] bg-transparent"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Keypad */}
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { num: "1", sub: "" },
+                  { num: "2", sub: "ABC" },
+                  { num: "3", sub: "DEF" },
+                  { num: "4", sub: "GHI" },
+                  { num: "5", sub: "JKL" },
+                  { num: "6", sub: "MNO" },
+                  { num: "7", sub: "PQRS" },
+                  { num: "8", sub: "TUV" },
+                  { num: "9", sub: "WXYZ" },
+                ].map(({ num, sub }) => (
+                  <button
+                    key={num}
+                    onClick={() => {
+                      if (pin.length < 4) {
+                        const newPin = pin + num;
+                        setPin(newPin);
+                        if (newPin.length === 4) {
+                          setTimeout(() => handlePinComplete(), 300);
+                        }
+                      }
+                    }}
+                    className="h-14 rounded-[10px] border border-[#7D8DBB] flex flex-col items-center justify-center gap-0.5"
+                  >
+                    <span className="font-medium text-[20px] text-[#000000]">
+                      {num}
+                    </span>
+                    {sub && (
+                      <span className="text-[9px] text-[#817E7E]">{sub}</span>
+                    )}
+                  </button>
+                ))}
+
+                {/* Bottom row: empty, 0, delete */}
+                <div />
+                <button
+                  onClick={() => {
+                    if (pin.length < 4) {
+                      const newPin = pin + "0";
+                      setPin(newPin);
+                      if (newPin.length === 4) {
+                        setTimeout(() => handlePinComplete(), 300);
+                      }
+                    }
+                  }}
+                  className="h-14 rounded-[10px] border border-[#7D8DBB] flex items-center justify-center"
+                >
+                  <span className="font-medium text-[20px] text-[#000000]">
+                    0
+                  </span>
+                </button>
+                <button
+                  onClick={() => setPin((p) => p.slice(0, -1))}
+                  className="h-14 rounded-[10px] flex items-center justify-center"
+                >
+                  <span className="font-medium text-[16px] text-[#122354]">
+                    Delete
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

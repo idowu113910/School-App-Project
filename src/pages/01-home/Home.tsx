@@ -9,6 +9,8 @@ import card from "../../assets/card.svg";
 import ussd from "../../assets/USSD.svg";
 import kbank from "../../assets/kuda bank.svg";
 import arr from "../../assets/arr forward.svg";
+import PaymentSuccess from "../00-onboarding/PaymentSuccess";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [showTransfer, setShowTransfer] = useState(false);
@@ -104,34 +106,45 @@ const Home = () => {
     }
   }, [transactionPin]);
 
+  // ✅ PAYMENT SUCCESS — checked before everything else
+  if (showPaymentSuccess) {
+    return (
+      <PaymentSuccess
+        onBackToHome={() => {
+          setShowPaymentSuccess(false);
+          setShowTransactionPin(false);
+          setShowAddMoney(false);
+          setTransactionPin(["", "", "", ""]);
+          setAmount("");
+          setNarration("");
+        }}
+      />
+    );
+  }
+
   if (showBankTransfer) {
     return (
       <div className="px-4">
-        <div className="flex items-center justify-between  py-3 mt-8 w-full">
-          {/* BACK BUTTON */}
+        <div className="flex items-center justify-between py-3 mt-8 w-full">
           <button onClick={() => setShowBankTransfer(false)}>
             <IoArrowBackOutline className="text-white bg-[#122354] w-7 h-7 rounded-[7px] p-1" />
           </button>
-
-          {/* TITLE */}
           <p className="font-semibold text-[16px] text-[#1E3A8A]">Transfer</p>
-
-          {/* SHARE BUTTON */}
           <button className="text-[#FFFFFF] bg-[#122354] font-semibold text-[12px] px-1.5 py-1.25 rounded-lg">
             Share
           </button>
         </div>
 
-        <p className="font-normal text-[14px] text-[#726F6F] flex items-center text-centerm px-6 mt-4 -ml-3">
-          Use the details below to send money to Unipay account from any bank’s
+        <p className="font-normal text-[14px] text-[#726F6F] flex items-center text-center px-6 mt-4 -ml-3">
+          Use the details below to send money to Unipay account from any bank's
           app or through internet banking
         </p>
 
         <div className="flex flex-col p-4 gap-y-1.25">
-          <h5 className="font-medium text-[14px] text-[#122354] ">Bank</h5>
+          <h5 className="font-medium text-[14px] text-[#122354]">Bank</h5>
           <input
             type="text"
-            placeholder="Kuda Microfinance Bnak"
+            placeholder="Kuda Microfinance Bank"
             className="rounded-[10px] w-full border py-3.75 px-2.5 border-[#E9EBF8] bg-[#FCFDFF] placeholder:font-normal text-[12px] text-[#817E7E]"
           />
         </div>
@@ -164,12 +177,12 @@ const Home = () => {
         </div>
 
         <div className="flex flex-col p-4 gap-y-1.25 mt-3">
-          <h5 className="font-medium text-[14px] text-[#122354] ">
+          <h5 className="font-medium text-[14px] text-[#122354]">
             Account Name
           </h5>
           <input
             type="text"
-            placeholder="Kuda Microfinance Bnak"
+            placeholder="Kuda Microfinance Bank"
             className="rounded-[10px] w-full border py-3.75 px-2.5 border-[#E9EBF8] bg-[#FCFDFF] placeholder:font-normal text-[12px] text-[#817E7E]"
           />
         </div>
@@ -178,13 +191,28 @@ const Home = () => {
   }
 
   if (showAddMoney) {
+    if (showPaymentSuccess) {
+      return (
+        <PaymentSuccess
+          onBackToHome={() => {
+            setShowPaymentSuccess(false);
+            setShowTransactionPin(false);
+            setShowAddMoney(false);
+            setTransactionPin(["", "", "", ""]);
+            setAmount("");
+            setNarration("");
+          }}
+        />
+      );
+    }
+
     return (
-      <div className="p-6 mt-4">
-        <div className=" flex gap-22 mt-4">
-          <button onClick={() => setShowTopUp(false)}>
+      <div className="p-6 mt-4 pb-28">
+        <div className="flex gap-22 mt-4">
+          {/* ✅ FIXED: was setShowTopUp(false), should be setShowAddMoney(false) */}
+          <button onClick={() => setShowAddMoney(false)}>
             <IoArrowBackOutline className="text-white bg-[#122354] w-7 h-7 rounded-[7px] p-1" />
           </button>
-
           <p className="text-[#1E3A8A] font-semibold text-[20px] ml-2">
             Add Money
           </p>
@@ -201,7 +229,6 @@ const Home = () => {
             >
               {formatAmount(amount)}
             </p>
-
             <div className="flex items-center gap-[1.84px] px-1 py-1">
               <span className="font-medium text-[12.89px] text-[#726F6F]">
                 NGN
@@ -221,13 +248,12 @@ const Home = () => {
               onChange={(e) => setNarration(e.target.value)}
               className="flex-1 font-normal text-[13px] text-black placeholder:text-[#817E7E] focus:outline-none bg-transparent"
             />
-
             <button
               onClick={() =>
                 isReadyToPay ? setShowTransactionPin(true) : undefined
               }
               className={`w-10.5 h-[29.56px] rounded-[4.69px] flex items-center justify-center transition-opacity duration-300 shrink-0
-    ${isReadyToPay ? "bg-[#122354] opacity-100 cursor-pointer" : "bg-[#122354] opacity-40 cursor-not-allowed"}`}
+                ${isReadyToPay ? "bg-[#122354] opacity-100 cursor-pointer" : "bg-[#122354] opacity-40 cursor-not-allowed"}`}
             >
               <img src={arr} alt="" className="w-[14.96px] h-[12.6px]" />
             </button>
@@ -256,10 +282,10 @@ const Home = () => {
                 key.label ? handleKeyPress(key.label) : undefined
               }
               className={`flex flex-col items-center justify-center h-14 rounded-[10px]
-              ${!key.label ? "pointer-events-none" : key.label === "delete" ? "border-none" : "border border-[#7D8DBB]"}`}
+                ${!key.label ? "pointer-events-none" : key.label === "delete" ? "border-none" : "border border-[#7D8DBB]"}`}
             >
               {key.label === "delete" ? (
-                <span className="font-medium text-[14px] text-[#122354] border-none">
+                <span className="font-medium text-[14px] text-[#122354]">
                   Delete
                 </span>
               ) : (
@@ -279,42 +305,30 @@ const Home = () => {
         {/* TRANSACTION PIN OVERLAY */}
         {showTransactionPin && (
           <div className="fixed inset-0 z-50 flex items-end justify-center">
-            {/* backdrop */}
             <div
               className="absolute inset-0 bg-black/30"
               onClick={() => setShowTransactionPin(false)}
             />
-
-            {/* sheet */}
             <div className="relative w-full bg-white rounded-t-[20px] px-6 pt-4 pb-8">
-              {/* drag handle */}
               <div className="w-10 h-1 bg-[#E9EBF8] rounded-full mx-auto mb-4" />
-
-              {/* close */}
               <button
                 onClick={() => setShowTransactionPin(false)}
                 className="absolute right-4 top-4 w-7 h-7 rounded-full bg-[#E9EBF8] flex items-center justify-center"
               >
                 <span className="text-[#122354] text-[14px] font-bold">✕</span>
               </button>
-
-              {/* title */}
               <p className="font-semibold text-[16px] text-[#122354] text-center mb-4">
                 Transaction Pin
               </p>
-
-              {/* PIN circles */}
               <div className="flex gap-4 items-center justify-center mb-6">
                 {transactionPin.map((val, index) => (
                   <div
                     key={index}
                     className={`w-5 h-5 rounded-full border-[1.5px] transition-all duration-300
-              ${val ? "bg-[#122354] border-[#122354]" : "border-[#817E7E]"}`}
+                      ${val ? "bg-[#122354] border-[#122354]" : "border-[#817E7E]"}`}
                   />
                 ))}
               </div>
-
-              {/* KEYPAD */}
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { label: "1", sub: "" },
@@ -336,7 +350,7 @@ const Home = () => {
                       key.label ? handlePinKey(key.label) : undefined
                     }
                     className={`flex flex-col items-center justify-center h-14 rounded-[10px]
-              ${!key.label ? "pointer-events-none" : key.label === "delete" ? "border-none" : "border border-[#7D8DBB]"}`}
+                      ${!key.label ? "pointer-events-none" : key.label === "delete" ? "border-none" : "border border-[#7D8DBB]"}`}
                   >
                     {key.label === "delete" ? (
                       <span className="font-medium text-[14px] text-[#122354]">
@@ -368,17 +382,12 @@ const Home = () => {
     return (
       <div className="flex flex-col w-full">
         <div className="flex items-center justify-between px-4 py-3 mt-8 w-full">
-          {/* BACK BUTTON */}
           <button onClick={() => setShowTransfer(false)}>
             <IoArrowBackOutline className="text-white bg-[#122354] w-7 h-7 rounded-[7px] p-1" />
           </button>
-
-          {/* TITLE */}
           <p className="font-semibold text-[16px] text-[#1E3A8A]">
             Send to Kuda
           </p>
-
-          {/* SHARE BUTTON */}
           <button
             onClick={() => setShowAddMoney(true)}
             className="text-[#FFFFFF] bg-[#122354] font-semibold text-[12px] px-1.5 py-1.25 rounded-lg"
@@ -387,10 +396,10 @@ const Home = () => {
           </button>
         </div>
 
-        {/* P TAG BELOW */}
         <p className="font-normal text-[14px] text-[#817E7E] text-center px-4 mt-2">
           Send to the school account number only
         </p>
+
         <div className="flex flex-col mt-5 gap-y-1.25 px-4">
           <h4 className="font-medium text-[14px] text-[#122354]">
             Account number
@@ -422,10 +431,7 @@ const Home = () => {
           <h4 className="font-medium text-[14px] text-[#122354]">Bank</h4>
           <div className="relative w-full">
             <div className="w-full h-12 border border-[#E9EBF8] bg-[#FCFDFF] rounded-[10px] px-2.5 pr-10 flex items-center gap-3">
-              <span className="text-[20px]">
-                {" "}
-                <img src={kbank} alt="" />
-              </span>
+              <img src={kbank} alt="" />
             </div>
             <IoChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-[#817E7E] text-xl pointer-events-none" />
           </div>
@@ -437,12 +443,10 @@ const Home = () => {
   if (showTopUp) {
     return (
       <div className="p-6">
-        {/* Top up screen styling goes here */}
-        <div className=" flex gap-22 mt-4">
+        <div className="flex gap-22 mt-4">
           <button onClick={() => setShowTopUp(false)}>
             <IoArrowBackOutline className="text-white bg-[#122354] w-7 h-7 rounded-[7px] p-1" />
           </button>
-
           <p className="text-[#1E3A8A] font-semibold text-[20px]">Add Money</p>
         </div>
 
@@ -458,7 +462,7 @@ const Home = () => {
                 method.clickable ? () => setShowBankTransfer(true) : undefined
               }
               className={`flex items-center justify-between p-2.5 rounded-[10px] gap-y-2.25 -ml-5
-       ${method.clickable ? "cursor-pointer" : "cursor-not-allowed"}`}
+                ${method.clickable ? "cursor-pointer" : "cursor-not-allowed"}`}
             >
               <div className="flex items-center gap-3">
                 <img
@@ -472,16 +476,12 @@ const Home = () => {
                   >
                     {method.title}
                   </p>
-                  <p
-                    className={`font-normal text-[12px] ${method.clickable ? "text-[#817E7E]" : "text-[#817E7E]"}`}
-                  >
+                  <p className="font-normal text-[12px] text-[#817E7E]">
                     {method.subtitle}
                   </p>
                 </div>
               </div>
-              <IoIosArrowForward
-                className={`text-lg ${method.clickable ? "text-[#757575]" : "text-[#757575]"}`}
-              />
+              <IoIosArrowForward className="text-lg text-[#757575]" />
             </div>
           ))}
         </div>

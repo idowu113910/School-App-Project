@@ -11,6 +11,7 @@ import AccountSetUp from "./pages/00-onboarding/AccountSetUp";
 import SignIn from "./pages/00-onboarding/SignIn";
 import GetStarted from "./pages/00-onboarding/GetStarted";
 import Pin from "./pages/00-onboarding/Pin";
+import PaymentSuccess from "./pages/00-onboarding/PaymentSuccess";
 
 // Layout wrapper - Footer appears only on these pages
 const RootLayout = (): JSX.Element => {
@@ -53,6 +54,8 @@ const router = createBrowserRouter([
     path: "/pin",
     element: <Pin />,
   },
+
+
 
   // Pages WITH footer
   {

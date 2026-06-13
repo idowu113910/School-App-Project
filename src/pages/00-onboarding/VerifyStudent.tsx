@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CiCalendar } from "react-icons/ci";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoArrowForwardOutline } from "react-icons/io5";
@@ -19,6 +19,8 @@ const VerifyStudent = () => {
   const [showNextScreen, setShowNextScreen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const dateInputRef = useRef<HTMLInputElement>(null);
+  const [displayDate, setDisplayDate] = useState("");
 
   const isFormFilled =
     matricNumber !== "" && dateOfBirth !== "" && selectedSchool !== "";
@@ -50,6 +52,14 @@ const VerifyStudent = () => {
       setShowNextScreen(true);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCalendarClick = () => {
+    if (dateInputRef.current) {
+      dateInputRef.current.type = "date";
+      dateInputRef.current.focus();
+      dateInputRef.current.showPicker();
     }
   };
 
@@ -191,24 +201,38 @@ const VerifyStudent = () => {
 
               <div className="relative w-full">
                 <input
+                  ref={dateInputRef}
                   type="text"
                   placeholder="DD / MM / YYYY"
-                  value={dateOfBirth}
+                  value={displayDate}
                   onFocus={(e) => {
                     e.target.type = "date";
+                    e.target.value = dateOfBirth;
                   }}
                   onBlur={(e) => {
                     if (!e.target.value) {
                       e.target.type = "text";
+                      setDisplayDate("");
                     } else {
-                      setDateOfBirth(e.target.value);
+                      e.target.type = "text";
+                      e.target.value = displayDate;
                     }
                   }}
-                  onChange={(e) => setDateOfBirth(e.target.value)}
+                  onInput={(e) => {
+                    const raw = (e.target as HTMLInputElement).value;
+                    setDateOfBirth(raw);
+                    if (raw) {
+                      const [year, month, day] = raw.split("-");
+                      setDisplayDate(`${day} / ${month} / ${year}`);
+                    }
+                  }}
                   className="w-full h-12 border border-[#E9EBF8] bg-[#FCFDFF] rounded-[10px] py-3.75 px-2.5 pr-10 text-[12px] placeholder:text-[12px] placeholder:text-[#817E7E] font-normal text-black focus:border-[#122354] focus:outline-none appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                 />
 
-                <CiCalendar className="absolute right-3 top-1/2 -translate-y-1/2 text-[#817E7E] text-xl" />
+                <CiCalendar
+                  onClick={handleCalendarClick}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#817E7E] text-xl cursor-pointer"
+                />
               </div>
             </div>
 
