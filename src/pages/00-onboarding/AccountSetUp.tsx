@@ -180,7 +180,7 @@ const AccountSetUp = () => {
           <div className="flex flex-col gap-y-2.5">
             <div className="flex flex-col">
               <h2 className="font-bold text-[20px] text-black text-center">
-                Number Verified! 🎉
+                Email Verified! 🎉
               </h2>
               <p className="font-normal text-[12px] text-[#817E7E] text-center mt-2">
                 Your number has been successfully confirmed
