@@ -9,6 +9,7 @@ import done from "../../assets/done.svg";
 import lock from "../../assets/padlock.svg";
 import { useNavigate } from "react-router-dom";
 
+
 const VerifyStudent = () => {
   const [selectedSchool, setSelectedSchool] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
@@ -21,6 +22,7 @@ const VerifyStudent = () => {
   const navigate = useNavigate();
   const dateInputRef = useRef<HTMLInputElement>(null);
   const [displayDate, setDisplayDate] = useState("");
+
 
   const isFormFilled =
     matricNumber !== "" && dateOfBirth !== "" && selectedSchool !== "";
@@ -202,36 +204,36 @@ const VerifyStudent = () => {
               <div className="relative w-full">
                 <input
                   ref={dateInputRef}
-                  type="text"
-                  placeholder="DD / MM / YYYY"
-                  value={displayDate}
-                  onFocus={(e) => {
-                    e.target.type = "date";
-                    e.target.value = dateOfBirth;
-                  }}
-                  onBlur={(e) => {
-                    if (!e.target.value) {
-                      e.target.type = "text";
-                      setDisplayDate("");
-                    } else {
-                      e.target.type = "text";
-                      e.target.value = displayDate;
-                    }
-                  }}
-                  onInput={(e) => {
-                    const raw = (e.target as HTMLInputElement).value;
+                  type="date"
+                  value={dateOfBirth}
+                  onChange={(e) => {
+                    const raw = e.target.value;
                     setDateOfBirth(raw);
                     if (raw) {
                       const [year, month, day] = raw.split("-");
                       setDisplayDate(`${day} / ${month} / ${year}`);
                     }
                   }}
-                  className="w-full h-12 border border-[#E9EBF8] bg-[#FCFDFF] rounded-[10px] py-3.75 px-2.5 pr-10 text-[12px] placeholder:text-[12px] placeholder:text-[#817E7E] font-normal text-black focus:border-[#122354] focus:outline-none appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                  autoComplete="off"
+                  style={{
+                    opacity: 0,
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    zIndex: 1,
+                  }}
                 />
-
+                <input
+                  type="text"
+                  readOnly
+                  placeholder="DD / MM / YYYY"
+                  value={displayDate}
+                  autoComplete="off"
+                  className="w-full h-12 border border-[#E9EBF8] bg-[#FCFDFF] rounded-[10px] py-3.75 px-2.5 pr-10 text-[12px] placeholder:text-[12px] placeholder:text-[#817E7E] font-normal text-black focus:border-[#122354] focus:outline-none"
+                />
                 <CiCalendar
-                  onClick={handleCalendarClick}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#817E7E] text-xl cursor-pointer"
+                  onClick={() => dateInputRef.current?.showPicker()}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#817E7E] text-xl cursor-pointer z-10"
                 />
               </div>
             </div>
