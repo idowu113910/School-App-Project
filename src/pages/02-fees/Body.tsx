@@ -5,7 +5,6 @@ import phone from "../../assets/USSD.svg";
 import secure from "../../assets/secure.svg";
 import { useEffect, useState } from "react";
 import visa from "../../assets/Visa.svg";
-import { useNavigate } from "react-router-dom";
 import PaymentSuccess from "../00-onboarding/PaymentSuccess";
 
 const Body = ({ onBack }: { onBack: () => void }) => {

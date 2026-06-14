@@ -25,7 +25,6 @@ import {
 const Header = () => {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [notifications, setNotifications] = useState(false);
-  const [showChooseAvatar, setShowChooseAvatar] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [showPersonalInfo, setShowPersonalInfo] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -196,7 +195,7 @@ const Header = () => {
           ].map((question, i) => (
             <div
               key={i}
-              className={`flex items-center justify-between px-4 py-3.5 h-[57px] rounded-[10px] border border-[#122354] bg-[#FCFDFF] ${i === 0 ? "border-[#122354]" : ""}`}
+              className={`flex items-center justify-between px-4 py-3.5 h-14.25 rounded-[10px] border border-[#122354] bg-[#FCFDFF] ${i === 0 ? "border-[#122354]" : ""}`}
             >
               <p className="font-medium text-[14px] text-[#122354]">{question}</p>
               <MdOutlineKeyboardArrowRight className="text-[#817E7E] text-xl shrink-0" />

@@ -9,7 +9,6 @@ import done from "../../assets/done.svg";
 import lock from "../../assets/padlock.svg";
 import { useNavigate } from "react-router-dom";
 
-
 const VerifyStudent = () => {
   const [selectedSchool, setSelectedSchool] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
@@ -22,7 +21,6 @@ const VerifyStudent = () => {
   const navigate = useNavigate();
   const dateInputRef = useRef<HTMLInputElement>(null);
   const [displayDate, setDisplayDate] = useState("");
-
 
   const isFormFilled =
     matricNumber !== "" && dateOfBirth !== "" && selectedSchool !== "";
@@ -54,14 +52,6 @@ const VerifyStudent = () => {
       setShowNextScreen(true);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleCalendarClick = () => {
-    if (dateInputRef.current) {
-      dateInputRef.current.type = "date";
-      dateInputRef.current.focus();
-      dateInputRef.current.showPicker();
     }
   };
 

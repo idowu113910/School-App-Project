@@ -10,7 +10,7 @@ import ussd from "../../assets/USSD.svg";
 import kbank from "../../assets/kuda bank.svg";
 import arr from "../../assets/arr forward.svg";
 import PaymentSuccess from "../00-onboarding/PaymentSuccess";
-import { useNavigate } from "react-router-dom";
+
 
 const Home = () => {
   const [showTransfer, setShowTransfer] = useState(false);

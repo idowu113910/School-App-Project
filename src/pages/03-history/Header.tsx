@@ -4,7 +4,6 @@ import adm from "../../assets/admin.svg";
 import fac from "../../assets/fac.svg";
 import ID from "../../assets/ID.svg";
 import { useState } from "react";
-import back from "../../assets/back.svg";
 import { IoArrowBackOutline } from "react-icons/io5";
 
 const Header = () => {
