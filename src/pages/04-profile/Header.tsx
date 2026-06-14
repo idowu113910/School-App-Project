@@ -30,7 +30,6 @@ const Header = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [showHelpSupport, setShowHelpSupport] = useState(false);
-
   const [isEditing, setIsEditing] = useState(false);
   const [personalDetails, setPersonalDetails] = useState(() => {
     const saved = localStorage.getItem("personalDetails");
@@ -698,7 +697,6 @@ const Header = () => {
 
           {/* Choose Avatar */}
           <button
-            onClick={() => setShowChooseAvatar(true)}
             className="flex gap-1.25 w-full rounded-[10px] p-2.5 bg-[#FCFDFF] items-center justify-center"
           >
             <img src={ava} alt="" className="w-[40.79px] h-9.25" />
