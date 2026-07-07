@@ -12,57 +12,50 @@ import SignIn from "./pages/00-onboarding/SignIn";
 import GetStarted from "./pages/00-onboarding/GetStarted";
 import Pin from "./pages/00-onboarding/Pin";
 
-// Layout wrapper for onboarding pages
-const OnboardingLayout = (): JSX.Element => {
-  return (
-    <div className="min-h-dvh">
-      <Outlet />
-    </div>
-  );
-};
-
 // Layout wrapper - Footer appears only on these pages
 const RootLayout = (): JSX.Element => {
   return (
-    <div className="min-h-dvh flex flex-col">
-      <div className="flex-1">
-        <Outlet />
+    <>
+      <div className="min-h-dvh flex flex-col">
+        <div className="flex-1">
+          <Outlet />
+          <Footer />
+        </div>
       </div>
-      <Footer />
-    </div>
+    </>
   );
 };
 
 const router = createBrowserRouter([
-  // Onboarding pages WITHOUT footer
+  // Onboarding page WITHOUT footer
   {
-    element: <OnboardingLayout />,
-    children: [
-      {
-        path: "/",
-        element: <Onboarding />,
-      },
-      {
-        path: "/getstarted",
-        element: <GetStarted />,
-      },
-      {
-        path: "/verifystudent",
-        element: <VerifyStudent />,
-      },
-      {
-        path: "/accountsetup",
-        element: <AccountSetUp />,
-      },
-      {
-        path: "/signin",
-        element: <SignIn />,
-      },
-      {
-        path: "/pin",
-        element: <Pin />,
-      },
-    ],
+    path: "/",
+    element: <Onboarding />,
+  },
+
+  {
+    path: "/getstarted",
+    element: <GetStarted />,
+  },
+
+  {
+    path: "/verifystudent",
+    element: <VerifyStudent />,
+  },
+
+  {
+    path: "/accountsetup",
+    element: <AccountSetUp />,
+  },
+
+  {
+    path: "/signin",
+    element: <SignIn />,
+  },
+
+  {
+    path: "/pin",
+    element: <Pin />,
   },
 
   // Pages WITH footer

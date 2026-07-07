@@ -50,7 +50,7 @@ const Pin = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-dvh w-full bg-white flex flex-col">
+      <div className="h-screen w-full bg-white flex flex-col">
         <HeaderCurve />
         <div className="flex-1 flex items-center justify-center">
           <CircleLoader />
@@ -61,7 +61,7 @@ const Pin = () => {
 
   if (showSuccess) {
     return (
-      <div className="min-h-dvh w-full flex flex-col bg-white">
+      <div className="h-screen w-full flex flex-col bg-white">
         <HeaderCurve />
         <div className="flex flex-col items-center px-6 mt-30">
           {/* GREEN CIRCLE */}

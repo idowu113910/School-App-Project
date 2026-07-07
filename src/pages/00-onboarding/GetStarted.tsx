@@ -6,7 +6,7 @@ const GetStarted = () => {
 
   return (
     <>
-      <div className="min-h-dvh bg-[#122354] h-screen flex flex-col items-center justify-center">
+      <div className="bg-[#122354] h-screen flex flex-col items-center justify-center">
         <div className="flex flex-col items-center text-center mt-28">
           <img src={uni} alt="" className="w-42 h-15.75 " />
 

@@ -74,7 +74,7 @@ const VerifyStudent = () => {
   if (showNextScreen) {
     return (
       <>
-        <div className="min-h-dvh">
+        <div>
           <HeaderCurve />
 
           <div className="flex flex-col p-4 mt-10">
