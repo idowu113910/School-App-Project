@@ -1,6 +1,6 @@
 const HeaderCurve = () => {
   return (
-    <div className="w-full relative" style={{ height: "183px" }}>
+    <div className="min-h-dvh w-full relative" style={{ height: "183px" }}>
       <svg
         width="100%"
         height="183"

@@ -38,7 +38,7 @@ const SignIn = () => {
         <BiArrowBack className="absolute bottom-28 left-5 text-white" />
       </div>
 
-      <div className="p-6 mt-4 gap-y-1.75">
+      <div className="p-6 mt-4 gap-y-1.75 min-h-dvh">
         <h4 className="font-semibold text-[#1E3A8A] text-[22px]">
           Welcome Back 👋
         </h4>

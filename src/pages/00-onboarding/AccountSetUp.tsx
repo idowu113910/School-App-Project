@@ -123,7 +123,7 @@ const AccountSetUp = () => {
 
   if (verifyPhase === "spinning" || verifyPhase === "success") {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-white px-6">
+      <div className="min-h-dvh w-full flex items-center justify-center bg-white px-6">
         <div className="w-full bg-white rounded-[20px] shadow-[0_10px_40px_rgba(0,0,0,0.1)] flex flex-col items-center py-10 px-6">
           <div className="relative flex items-center justify-center w-24 h-24 mb-6">
             {verifyPhase === "spinning" && (
@@ -212,7 +212,7 @@ const AccountSetUp = () => {
       <>
         <div>
           <HeaderCurve />
-          <div className="flex flex-col gap-1.75 items-center text-center mt-10">
+          <div className="min-h-dvh flex flex-col gap-1.75 items-center text-center mt-10">
             <p className="font-semibold text-[20px] text-[#122354]">
               Check Your Email
             </p>
@@ -336,7 +336,7 @@ const AccountSetUp = () => {
     <>
       <div>
         <HeaderCurve />
-        <div className="p-4 mt-10">
+        <div className="min-h-dvh p-4 mt-10">
           <div className="flex flex-col">
             <h2 className="font-semibold text-[22px] text-[#1E3A8A] leading-[100%]">
               Set Up Your Account

@@ -79,7 +79,7 @@ const Header = ({
 
   return (
     <>
-      <div className="flex items-center justify-between w-full px-4 py-6">
+      <div className="min-h-dvh flex items-center justify-between w-full px-4 py-6">
         <div className="flex items-center gap-3 min-w-0">
           <img
             src={pic}

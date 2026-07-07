@@ -9,7 +9,7 @@ const PaymentSuccess = ({ onBackToHome }: PaymentSuccessProps) => {
   const navigate = useNavigate();
 
   return (
-    <div className="fixed inset-0 z-50 h-screen w-full flex flex-col items-center justify-center bg-[#1E3A8A] px-6">
+    <div className="fixed inset-0 z-50 min-h-dvh w-full flex flex-col items-center justify-center bg-[#1E3A8A] px-6">
       {/* CONFETTI AREA */}
       <div className="mb-8"></div>
 

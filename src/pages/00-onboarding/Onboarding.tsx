@@ -65,7 +65,7 @@ const Onboarding = () => {
   // PHASE 1 — white screen with small dot
   if (splashPhase === "dot") {
     return (
-      <div className="h-screen w-full bg-white flex items-center justify-center overflow-hidden">
+      <div className="min-h-dvh w-full bg-white flex items-center justify-center overflow-hidden">
         <div className="w-3 h-3 rounded-full bg-[#1E3A8A]" />
       </div>
     );
@@ -98,7 +98,7 @@ const Onboarding = () => {
   // PHASE 3 — onboarding slides
   return (
     <>
-      <div className="h-screen flex flex-col items-center justify-center px-4">
+      <div className="min-h-dvh flex flex-col items-center justify-center px-4">
         {currentScreen > 0 && (
           <button
             onClick={handleBack}
