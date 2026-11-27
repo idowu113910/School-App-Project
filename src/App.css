@@ -14,11 +14,19 @@ body {
   margin: 0;
 }
 
+/* On phones the app fills the whole screen width, so no white strips show at
+   the sides (some phones are wider than 430px, e.g. 440px). On tablets and
+   desktops it stays a centred 430px column. */
 #root {
   width: 100%;
-  max-width: 430px;
   min-width: 320px;
   margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  #root {
+    max-width: 430px;
+  }
 }
 
 @layer base {

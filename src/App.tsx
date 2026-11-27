@@ -1,16 +1,26 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import Home from "./pages/01-home/Home";
-import Fees from "./pages/02-fees/Fees";
-import History from "./pages/03-history/History";
-import Profile from "./pages/04-profile/Profile";
-import Footer from "./layout/Footer";
 import type { JSX } from "react/jsx-runtime";
-import Onboarding from "./pages/00-onboarding/Onboarding";
-import VerifyStudent from "./pages/00-onboarding/VerifyStudent";
-import AccountSetUp from "./pages/00-onboarding/AccountSetUp";
-import SignIn from "./pages/00-onboarding/SignIn";
-import GetStarted from "./pages/00-onboarding/GetStarted";
-import Pin from "./pages/00-onboarding/Pin";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+const Home = lazy(() => import("./pages/01-home/Home"));
+const Fees = lazy(() => import("./pages/02-fees/Fees"));
+const History = lazy(() => import("./pages/03-history/History"));
+const Profile = lazy(() => import("./pages/04-profile/Profile"));
+const Footer = lazy(() => import("./layout/Footer"));
+const Onboarding = lazy(() => import("./pages/00-onboarding/Onboarding"));
+const VerifyStudent = lazy(
+  () => import("./pages/00-onboarding/VerifyStudent"),
+);
+const AccountSetUp = lazy(
+  () => import("./pages/00-onboarding/AccountSetUp"),
+);
+const SignIn = lazy(() => import("./pages/00-onboarding/SignIn"));
+const GetStarted = lazy(() => import("./pages/00-onboarding/GetStarted"));
+const Pin = lazy(() => import("./pages/00-onboarding/Pin"));
+const PasswordReset = lazy(
+  () => import("./pages/00-onboarding/PasswordReset"),
+);
 
 // Layout wrapper - Footer appears only on these pages
 const RootLayout = (): JSX.Element => {
@@ -55,23 +65,74 @@ const router = createBrowserRouter([
 
   {
     path: "/pin",
-    element: <Pin />,
+    element: (
+      <ProtectedRoute>
+        <Pin />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/reset-password",
+    element: <PasswordReset />,
   },
 
   // Pages WITH footer
   {
     element: <RootLayout />,
     children: [
-      { path: "/home", element: <Home /> },
-      { path: "/fees", element: <Fees /> },
-      { path: "/history", element: <History /> },
-      { path: "/profile", element: <Profile /> },
+      {
+        path: "/home",
+        element: (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/fees",
+        element: (
+          <ProtectedRoute>
+            <Fees />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/history",
+        element: (
+          <ProtectedRoute>
+            <History />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-dvh flex items-center justify-center bg-white">
+          <div className="flex items-center gap-1.5" role="status">
+            <div className="w-2 h-2 rounded-full bg-[#122354] dot-1" />
+            <div className="w-2 h-2 rounded-full bg-[#122354] dot-2" />
+            <div className="w-2 h-2 rounded-full bg-[#122354] dot-3" />
+          </div>
+        </div>
+      }
+    >
+      <RouterProvider router={router} />
+    </Suspense>
+  );
 }
 
 export default App;

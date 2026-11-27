@@ -21,8 +21,16 @@ import {
   IoMailOutline,
   IoChatbubblesOutline,
 } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import {
+  getAuthErrorMessage,
+  signOut,
+} from "../../services/authService";
 
 const Header = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [notifications, setNotifications] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -31,21 +39,29 @@ const Header = () => {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [showHelpSupport, setShowHelpSupport] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState("");
   const [personalDetails, setPersonalDetails] = useState(() => {
-    const saved = localStorage.getItem("personalDetails");
+    const saved = localStorage.getItem(`personalDetails:${user?.id ?? "guest"}`);
     return saved
       ? JSON.parse(saved)
       : {
-          fullName: "Odafe Samuel",
-          email: "Odafesamuel@gmail.com",
-          phone: "+234 702 345 4564",
-          gender: "Male",
-          dob: "September 13, 2005",
-          address: "14 Ondo Street, Lagos",
-          contactName: "Mr Odafe John",
-          relationship: "Father",
-          contactPhone: "+234 702 345 4564",
-          contactGender: "Male",
+          fullName:
+            typeof user?.user_metadata?.full_name === "string"
+              ? user.user_metadata.full_name
+              : "",
+          email: user?.email ?? "",
+          phone:
+            typeof user?.user_metadata?.phone_number === "string"
+              ? user.user_metadata.phone_number
+              : "",
+          gender: "",
+          dob: "",
+          address: "",
+          contactName: "",
+          relationship: "",
+          contactPhone: "",
+          contactGender: "",
         };
   });
 
@@ -61,8 +77,24 @@ const Header = () => {
   };
 
   const handleSave = () => {
-    localStorage.setItem("personalDetails", JSON.stringify(personalDetails));
+    localStorage.setItem(
+      `personalDetails:${user?.id ?? "guest"}`,
+      JSON.stringify(personalDetails),
+    );
     setIsEditing(false);
+  };
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    setSignOutError("");
+    try {
+      await signOut();
+      navigate("/signin", { replace: true });
+    } catch (error) {
+      setSignOutError(getAuthErrorMessage(error));
+    } finally {
+      setIsSigningOut(false);
+    }
   };
 
   const settings = [
@@ -86,7 +118,7 @@ const Header = () => {
     },
     {
       title: "Payment history",
-      subtitle: "View all payment history",
+      subtitle: "Transaction records unavailable",
       icon: history,
       type: "link",
     },
@@ -108,31 +140,31 @@ const Header = () => {
     {
       icon: <IoMdLock className="text-[#F59E0B]" />,
       label: "Matric Number",
-      value: "19/112/0045",
+      value: "Not verified",
       editable: false,
     },
     {
       icon: <IoMdLock className="text-[#F59E0B]" />,
       label: "Department",
-      value: "Nutrition & Dietetics",
+      value: "Not available",
       editable: false,
     },
     {
       icon: <IoMdLock className="text-[#F59E0B]" />,
       label: "Faculty",
-      value: "Health Science",
+      value: "Not available",
       editable: false,
     },
     {
       icon: <IoMdLock className="text-[#F59E0B]" />,
       label: "Level",
-      value: "300 Level",
+      value: "Not available",
       editable: false,
     },
     {
       icon: <IoMdLock className="text-[#F59E0B]" />,
       label: "Session",
-      value: "300 Level",
+      value: "Not available",
       editable: false,
     },
   ];
@@ -383,7 +415,7 @@ const Header = () => {
               />
             ) : (
               <p className="font-semibold text-[14px] text-[#1E3A8A]">
-                {personalDetails.fullName}
+                {personalDetails.fullName || "Not provided"}
               </p>
             )}
           </div>
@@ -396,17 +428,12 @@ const Header = () => {
             {isEditing ? (
               <input
                 value={personalDetails.email}
-                onChange={(e) =>
-                  setPersonalDetails((prev: typeof personalDetails) => ({
-                    ...prev,
-                    email: e.target.value,
-                  }))
-                }
-                className="font-semibold text-[14px] text-[#1E3A8A] border border-[#E9EBF8] bg-[#FCFDFF] rounded-lg px-3 py-2 focus:outline-none w-full"
+                readOnly
+                className="font-semibold text-[14px] text-[#1E3A8A] border border-[#E9EBF8] bg-[#FCFDFF] rounded-lg px-3 py-2 focus:outline-none w-full cursor-not-allowed"
               />
             ) : (
               <p className="font-semibold text-[14px] text-[#1E3A8A]">
-                {personalDetails.email}
+                {personalDetails.email || "Not provided"}
               </p>
             )}
           </div>
@@ -429,7 +456,7 @@ const Header = () => {
               />
             ) : (
               <p className="font-semibold text-[14px] text-[#1E3A8A]">
-                {personalDetails.phone}
+                {personalDetails.phone || "Not provided"}
               </p>
             )}
           </div>
@@ -450,7 +477,7 @@ const Header = () => {
               />
             ) : (
               <p className="font-semibold text-[14px] text-[#1E3A8A]">
-                {personalDetails.gender}
+                {personalDetails.gender || "Not provided"}
               </p>
             )}
           </div>
@@ -473,7 +500,7 @@ const Header = () => {
               />
             ) : (
               <p className="font-semibold text-[14px] text-[#1E3A8A]">
-                {personalDetails.dob}
+                {personalDetails.dob || "Not provided"}
               </p>
             )}
           </div>
@@ -494,7 +521,7 @@ const Header = () => {
               />
             ) : (
               <p className="font-semibold text-[14px] text-[#1E3A8A]">
-                {personalDetails.address}
+                {personalDetails.address || "Not provided"}
               </p>
             )}
           </div>
@@ -527,7 +554,7 @@ const Header = () => {
               />
             ) : (
               <p className="font-semibold text-[14px] text-[#1E3A8A]">
-                {personalDetails.contactName}
+                {personalDetails.contactName || "Not provided"}
               </p>
             )}
           </div>
@@ -550,7 +577,7 @@ const Header = () => {
               />
             ) : (
               <p className="font-semibold text-[14px] text-[#1E3A8A]">
-                {personalDetails.relationship}
+                {personalDetails.relationship || "Not provided"}
               </p>
             )}
           </div>
@@ -573,7 +600,7 @@ const Header = () => {
               />
             ) : (
               <p className="font-semibold text-[14px] text-[#1E3A8A]">
-                {personalDetails.contactPhone}
+                {personalDetails.contactPhone || "Not provided"}
               </p>
             )}
           </div>
@@ -594,7 +621,7 @@ const Header = () => {
               />
             ) : (
               <p className="font-semibold text-[14px] text-[#1E3A8A]">
-                {personalDetails.contactGender}
+                {personalDetails.contactGender || "Not provided"}
               </p>
             )}
           </div>
@@ -735,38 +762,38 @@ const Header = () => {
               </button>
             </div>
 
-            {/* Name, matric, verified */}
+            {/* Account identity */}
             <div className="flex flex-col justify-center gap-1 pt-1">
               <h1 className="font-semibold text-[18px] text-black">
-                Odafe Samuel
+                {personalDetails.fullName || user?.email || "Student"}
               </h1>
               <p className="font-normal text-[13px] text-[#726F6F]">
-                Matric No: 19/112/0043
+                {user?.email ?? "Email unavailable"}
               </p>
-              <button className="flex items-center gap-1 border border-[#108B41] rounded-full px-3 py-0.5 w-fit mt-1">
-                <span className="text-[#108B41] text-[11px]">✓</span>
-                <span className="text-[#108B41] font-medium text-[11px]">
-                  Verified Student
+              <span className="flex items-center gap-1 border border-[#108B41] rounded-full px-3 py-0.5 w-fit mt-1">
+                <span className="text-[#108B41] text-[11px]">
+                  {user?.email_confirmed_at ? "✓" : "!"}
                 </span>
-              </button>
+                <span className="text-[#108B41] font-medium text-[11px]">
+                  {user?.email_confirmed_at
+                    ? "Email Verified"
+                    : "Email Not Verified"}
+                </span>
+              </span>
             </div>
           </div>
 
           <div className="flex bg-[#122354] w-full py-7.5 px-5 gap-5.5 rounded-[10px] h-26.25 mt-6 justify-between">
             <div className="flex flex-col gap-0.75 items-center text-center">
-              <p className="font-semibold text-white text-[16px]">₦10000.00</p>
-              <p className="font-normal text-[#9C9A9A] text-[12px]">
-                Total Paid
-              </p>
+              <p className="font-semibold text-white text-[14px]">Unavailable</p>
+              <p className="font-normal text-[#9C9A9A] text-[12px]">Total Paid</p>
             </div>
-
             <div className="flex flex-col gap-0.75 items-center text-center">
-              <p className="font-semibold text-white text-[16px]">6</p>
+              <p className="font-semibold text-white text-[14px]">Unavailable</p>
               <p className="font-normal text-[#9C9A9A] text-[12px]">Pending</p>
             </div>
-
             <div className="flex flex-col gap-0.75 items-center text-center">
-              <p className="font-semibold text-white text-[16px]">12</p>
+              <p className="font-semibold text-white text-[14px]">Unavailable</p>
               <p className="font-normal text-[#9C9A9A] text-[12px]">
                 Transactions
               </p>
@@ -820,8 +847,17 @@ const Header = () => {
               </div>
             ))}
 
-            <button className="w-full bg-red-600 py-4 rounded-[10px] text-white">
-              Log Out
+            {signOutError && (
+              <p className="text-red-500 text-[12px]" role="alert">
+                {signOutError}
+              </p>
+            )}
+            <button
+              onClick={handleSignOut}
+              disabled={isSigningOut}
+              className="w-full bg-red-600 py-4 rounded-[10px] text-white disabled:opacity-50"
+            >
+              {isSigningOut ? "Signing Out..." : "Log Out"}
             </button>
           </div>
         </div>
